@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>La Catedral de la Libertad · Quince lámparas</title>
+<meta name="description" content="Entra en la catedral, recorre quince lámparas y descubre con Cristo para qué queremos ser libres. Una guía breve de lectura, oración y un paso para cada día.">
+<meta name="theme-color" content="#140f0b">
+<meta property="og:title" content="La Catedral de la Libertad">
+<meta property="og:description" content="Quince lámparas para descubrir con Cristo para qué queremos ser libres.">
+<meta property="og:image" content="assets_img/infografia-movil.webp">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23140f0b'/%3E%3Cpath d='M32 10c6 8 9 13 9 19a9 9 0 0 1-18 0c0-6 3-11 9-19z' fill='%23d9b26a'/%3E%3Cpath d='M22 44h20l-3 10H25z' fill='%23a9803f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo.css?v=4">
+</head>
+<body class="portada">
+<div id="foto-nave" aria-hidden="true" data-foto3d="0.025"><img src="assets_img/foto-nave.webp" alt="" fetchpriority="high"></div>
+<canvas id="nave" aria-hidden="true"></canvas>
+<div id="velo" aria-hidden="true"></div>
+
+<header class="cabecera">
+  <a class="marca" href="index.html"><span class="llama" aria-hidden="true"></span>La Catedral de la Libertad</a>
+  <nav aria-label="Secciones">
+    <a href="#recorrido">Recorrer</a>
+    <a href="#lamparas">Las lámparas</a>
+    <a href="#mapa">Mapa</a>
+    <a href="altar.html">El altar</a>
+  </nav>
+  <a class="btn btn-oro cab-accion" data-continuar href="lampara.html?n=1">Empezar</a>
+</header>
+
+<main id="top">
+  <section class="hero" aria-labelledby="titulo">
+    <div class="hero-txt">
+      <h1 id="titulo">La Catedral de la Libertad</h1>
+      <p class="entradilla">Entra en la catedral, recorre quince lámparas y descubre con Cristo para qué queremos ser libres.</p>
+      <div class="hero-acciones">
+        <a class="btn btn-oro" data-continuar href="lampara.html?n=1">Encender la primera lámpara</a>
+        <a class="btn btn-linea" href="#recorrido">Recorrer la nave</a>
+      </div>
+      <p class="progreso" data-progreso aria-live="polite">Quince lámparas te esperan apagadas en la nave.</p>
+    </div>
+    <p class="pista" aria-hidden="true">Baja despacio: la nave avanza hacia el altar</p>
+  </section>
+
+  <section class="intro" id="camino" aria-labelledby="camino-t">
+    <div class="intro-txt">
+      <h2 id="camino-t">Un camino por la catedral</h2>
+      <p>Imagina que entras en una catedral. Cada lámpara ilumina una situación de la vida: una decisión, una herida, una caída o un tiempo de silencio. Al fondo está el altar. Allí nos espera Cristo, que da sentido al recorrido.</p>
+      <p>No necesitas conocer las obras literarias. Cada lámpara parte de la vida, se ilumina con una obra y te invita al silencio, la oración y un paso concreto. Lee sin prisa: una al día o una a la semana.</p>
+    </div>
+    <blockquote class="pregunta">
+      <p>Una pregunta nos acompaña:<br><strong>¿para qué quiero ser libre?</strong></p>
+    </blockquote>
+  </section>
+
+  <section class="vuelo" id="recorrido" aria-labelledby="vuelo-t">
+    <div class="vuelo-cab">
+      <h2 id="vuelo-t">Recorre la nave</h2>
+      <p>Sigue bajando: avanzas por el pasillo central y pasas junto a las quince lámparas hasta llegar al altar. Toca cualquiera para leerla.</p>
+    </div>
+    <div class="vuelo-pista">
+      <div class="vuelo-escena">
+        <div class="vuelo-fondo" aria-hidden="true"></div>
+        <div class="vuelo-mundo"></div>
+        <p class="vuelo-hud" aria-live="polite"></p>
+        <div class="vuelo-barra" aria-hidden="true"><i></i></div>
+      </div>
+    </div>
+  </section>
+
+  <div id="etapas"></div>
+
+  <section class="mapa" id="mapa" aria-labelledby="mapa-t">
+    <div class="mapa-txt">
+      <h2 id="mapa-t">Quince matices de una misma libertad</h2>
+      <p>En el centro está la libertad. A su alrededor, quince maneras de aprender a vivirla. Toca una luz para ir directamente a su lámpara.</p>
+      <ol class="mapa-lista" id="mapa-lista"></ol>
+    </div>
+    <div class="mapa-fig">
+      <svg id="mapa-svg" viewBox="0 0 600 600" role="img" aria-labelledby="mapa-svg-t"><title id="mapa-svg-t">Rosetón con la libertad en el centro y quince matices alrededor</title></svg>
+    </div>
+  </section>
+
+  <section class="infografia" id="infografia" aria-labelledby="info-t">
+    <figure>
+      <a href="assets_img/infografia.webp" target="_blank" rel="noopener">
+        <picture>
+          <source media="(max-width: 700px)" srcset="assets_img/infografia-movil.webp">
+          <img src="assets_img/infografia.webp" width="1143" height="2048" loading="lazy" alt="Infografía de La Catedral de la Libertad: etapas I, II y III con las quince lámparas y sus frases, hasta llegar al altar.">
+        </picture>
+      </a>
+    </figure>
+    <div class="info-txt">
+      <h2 id="info-t">El camino completo de un vistazo</h2>
+      <p>Comenzamos abriendo el corazón, aprendemos a amar y perseveramos. Al final del camino está Cristo.</p>
+      <p class="nota">Lee la imagen de abajo arriba: de la etapa I hasta el altar. Tócala para verla a tamaño completo, guardarla o compartirla.</p>
+      <a class="btn btn-linea" href="assets_img/infografia.webp" download="La_Catedral_de_la_Libertad.webp">Descargar la infografía</a>
+    </div>
+  </section>
+
+  <section class="altar-cierre" aria-labelledby="altar-t">
+    <h2 id="altar-t">Cristo y la verdadera libertad</h2>
+    <p>La meta del camino es ser libres para amar y servir. Las quince lámparas desembocan en una pregunta más profunda: no solamente «¿soy libre?», sino «¿para qué quiero ser libre?».</p>
+    <blockquote class="cita-grande"><p>«Si el Hijo os hace libres, seréis realmente libres.»</p><cite>Juan 8,36</cite></blockquote>
+    <a class="btn btn-oro" href="altar.html">Llegar al altar</a>
+  </section>
+</main>
+
+<footer class="pie">
+  <p class="pie-nombre">La Catedral de la Libertad</p>
+  <p>Quince lámparas · tres etapas · un altar. Las lámparas que enciendes se guardan solo en este dispositivo.</p>
+  <p><a href="#top">Volver arriba</a> · <button type="button" class="enlace" data-reiniciar>Apagar todas las lámparas</button></p>
+</footer>
+
+<noscript><p class="sin-js">Esta guía necesita JavaScript para mostrar las lámparas. Puedes ver la <a href="assets_img/infografia.webp">infografía completa</a>.</p></noscript>
+<script src="contenido.js?v=4"></script>
+<script src="nave.js?v=4"></script>
+<script src="app.js?v=4"></script>
+<script src="vuelo.js?v=4"></script>
+<script src="efectos.js?v=4"></script>
+</body>
+</html>

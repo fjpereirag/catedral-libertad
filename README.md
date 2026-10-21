@@ -4,18 +4,20 @@ Guía web de quince lámparas para descubrir con Cristo para qué queremos ser l
 
 ## Archivos (estructura plana, como `tierra-santa-web`)
 
+Versión **solo móvil** con **un único camino**: Portada → Etapa I → lámparas 1-5 → Etapa II → 6-10 → Etapa III → 11-15 → Altar. En ordenador se ve la misma columna de móvil, centrada.
+
 | Archivo | Qué es |
 |---|---|
-| `index.html` | Portada: nave en perspectiva, el camino, las tres etapas, rosetón de los quince matices, infografía y cierre |
-| `lampara.html?n=1…15` | Lectura de cada lámpara: texto, Detente, Palabra de Dios, Un paso para hoy, Oración, Para llevar contigo |
-| `altar.html` | Final del camino y las quince frases «para llevar contigo» |
-| `contenido.js` | Todo el texto (`window.CL`): editar aquí para corregir una lámpara |
-| `app.js` | Páginas, progreso, mapa, apariciones |
-| `nave.js` | Portada: foto de la nave + 15 lámparas colgando en 3D + polvo de luz (canvas 2D) |
-| `vuelo.js` | «Recorre la nave»: pasillo 3D (CSS 3D) con las 15 lámparas hasta el altar |
-| `efectos.js` | Fotos 3D por profundidad, polvo de luz, chispas al encender, títulos animados, inclinación 3D |
-| `estilo.css` | Estilo |
-| `assets_img/` | Infografía, 15 ilustraciones, 20 fotos (`foto-*.webp`) y sus 20 mapas de profundidad (`foto-*-prof.webp`) |
+| `index.html` | Portada (foto 3D de la nave) + el camino completo en orden, con «Sigue aquí» |
+| `etapa.html?e=1…3` | Entrada de cada etapa |
+| `lampara.html?n=1…15` | Lectura de cada lámpara |
+| `altar.html` | Final del camino |
+| `contenido.js` | Todo el texto (`window.CL`) |
+| `app.js` | El camino, el progreso y la barra inferior ‹ Anterior · progreso · Siguiente › |
+| `nave.js` | Portada: foto de la nave, lámparas en 3D y polvo de luz |
+| `efectos.js` | Fotos 3D por profundidad, polvo de luz, chispas al encender, títulos animados |
+| `estilo.css` | Estilo móvil |
+| `assets_img/` | Fotos, mapas de profundidad, ilustraciones e infografía |
 
 Las lámparas que cada persona enciende se guardan solo en su dispositivo (localStorage).
 

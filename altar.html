@@ -4,26 +4,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>El altar · La Catedral de la Libertad</title>
-<meta name="description" content="El final del camino: Cristo y la verdadera libertad, y las quince frases para llevar contigo.">
+<meta name="description" content="El final del camino: Cristo y la verdadera libertad.">
 <meta name="theme-color" content="#140f0b">
+<meta property="og:title" content="La Catedral de la Libertad">
+<meta property="og:description" content="Un camino en tres etapas y quince lámparas para descubrir con Cristo para qué queremos ser libres.">
+<meta property="og:image" content="assets_img/foto-nave.webp">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23140f0b'/%3E%3Cpath d='M32 10c6 8 9 13 9 19a9 9 0 0 1-18 0c0-6 3-11 9-19z' fill='%23d9b26a'/%3E%3Cpath d='M22 44h20l-3 10H25z' fill='%23a9803f'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="estilo.css?v=4">
+<link rel="stylesheet" href="estilo.css?v=6">
 </head>
 <body class="pagina-altar">
 <header class="cabecera">
   <a class="marca" href="index.html"><span class="llama" aria-hidden="true"></span>La Catedral de la Libertad</a>
-  <nav aria-label="Secciones">
-    <a href="index.html#camino">El camino</a>
-    <a href="index.html#lamparas">Las lámparas</a>
-    <a href="index.html#mapa">Mapa</a>
-    <a href="altar.html" aria-current="page">El altar</a>
-  </nav>
-  <a class="btn btn-linea cab-accion" href="index.html#lamparas">Índice</a>
+  <a class="cab-progreso" href="index.html#camino" data-pill aria-label="Tu progreso en el camino">0/15</a>
 </header>
-
 <main id="top">
   <section class="altar-hero" aria-labelledby="altar-h">
     <div class="altar-fondo" aria-hidden="true" data-foto3d="0.025"><img src="assets_img/foto-altar.webp" alt="" onerror="this.parentNode.remove()"></div>
@@ -32,22 +28,17 @@
     <p class="entradilla">Las quince lámparas desembocan en una pregunta más profunda: no solamente «¿soy libre?», sino «¿para qué quiero ser libre?».</p>
     <p class="altar-texto">La libertad cristiana se hace capacidad de amar, servir, perdonar, comenzar de nuevo y entregar la vida.</p>
     <blockquote class="cita-grande"><p>«Si el Hijo os hace libres, seréis realmente libres.»</p><cite>Juan 8,36</cite></blockquote>
-    <p class="progreso" data-progreso></p>
   </section>
-
   <section class="letania" aria-labelledby="letania-t">
-    <h2 id="letania-t">Quince frases para llevar contigo</h2>
-    <p class="letania-intro">Lo que cada lámpara te deja en el bolsillo. Léelas despacio, como una letanía, o elige una para hoy.</p>
+    <h2 id="letania-t">Lo que llevas contigo</h2>
+    <p class="letania-intro">Una frase de cada lámpara. Léelas despacio, como una letanía.</p>
     <ol id="letania-lista"></ol>
+    <p class="progreso" data-progreso></p>
+    <a class="btn btn-linea" href="index.html">Volver al inicio</a>
   </section>
 </main>
-
-<footer class="pie">
-  <p class="pie-nombre">La Catedral de la Libertad</p>
-  <p><a href="lampara.html?n=1">Volver a la primera lámpara</a> · <a href="index.html">Portada</a></p>
-</footer>
-<script src="contenido.js?v=4"></script>
-<script src="app.js?v=4"></script>
-<script src="efectos.js?v=4"></script>
+<script src="contenido.js?v=6"></script>
+<script src="app.js?v=6"></script>
+<script src="efectos.js?v=6"></script>
 </body>
 </html>

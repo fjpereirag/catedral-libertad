@@ -1,8 +1,9 @@
-/* La Catedral de la Libertad · lógica de páginas */
+/* La Catedral de la Libertad · versión móvil, un único camino
+   Portada → Etapa I → lámparas 1-5 → Etapa II → 6-10 → Etapa III → 11-15 → Altar */
 (function () {
   'use strict';
   var D = window.CL; if (!D) return;
-  var L = D.lamparas, N = L.length;
+  var L = D.lamparas, N = L.length, E = D.etapas;
   document.documentElement.classList.add('js');
 
   /* ---------- progreso (solo en este dispositivo) ---------- */
@@ -12,99 +13,135 @@
   function encendida(n) { return leer().indexOf(n) !== -1; }
   function encender(n) { var a = leer(); if (a.indexOf(n) === -1) { a.push(n); a.sort(function (x, y) { return x - y; }); guardar(a); } }
   function apagar(n) { guardar(leer().filter(function (x) { return x !== n; })); }
-  function siguiente() { var a = leer(); for (var i = 1; i <= N; i++) if (a.indexOf(i) === -1) return i; return 0; }
-
-  /* tamaño de letra */
   try { if (localStorage.getItem('cl-letra') === 'grande') document.documentElement.classList.add('letra-grande'); } catch (e) {}
 
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-  function etapaDe(n) { for (var i = 0; i < D.etapas.length; i++) { var e = D.etapas[i]; if (n >= e.desde && n <= e.hasta) return e; } }
   function nn(n) { return (n < 10 ? '0' : '') + n; }
   function img(n) { return 'assets_img/lampara-' + nn(n) + '.webp'; }
-  /* foto realista si existe; si falta, vuelve a la ilustración */
   function foto(n) { return 'assets_img/foto-lampara-' + nn(n) + '.webp'; }
   function fallback(n) { return ' onerror="this.onerror=null;this.src=\'' + img(n) + '\';this.classList.add(\'ilus\')"'; }
+  function etapaDe(n) { for (var i = 0; i < E.length; i++) if (n >= E[i].desde && n <= E[i].hasta) return i; return 0; }
+
+  /* ---------- el camino: una sola secuencia de pasos ---------- */
+  var PASOS = [];
+  E.forEach(function (e, i) {
+    PASOS.push({ tipo: 'etapa', e: i, url: 'etapa.html?e=' + (i + 1), nombre: 'Etapa ' + e.id + ' · ' + e.nombre });
+    for (var n = e.desde; n <= e.hasta; n++) PASOS.push({ tipo: 'lampara', n: n, e: i, url: 'lampara.html?n=' + n, nombre: 'Lámpara ' + n + ' · ' + L[n - 1].titulo });
+  });
+  PASOS.push({ tipo: 'altar', url: 'altar.html', nombre: 'El altar' });
+  function indicePaso(tipo, v) {
+    for (var i = 0; i < PASOS.length; i++) {
+      var p = PASOS[i];
+      if (p.tipo === tipo && (tipo === 'altar' || (tipo === 'etapa' ? p.e === v : p.n === v))) return i;
+    }
+    return 0;
+  }
+  /* dónde seguir: la primera lámpara sin encender (o su etapa, si aún no se ha empezado) */
+  function pasoSiguiente() {
+    var a = leer();
+    for (var n = 1; n <= N; n++) {
+      if (a.indexOf(n) === -1) {
+        var e = etapaDe(n), ini = E[e].desde;
+        var empezada = false; for (var k = ini; k <= E[e].hasta; k++) if (a.indexOf(k) !== -1) empezada = true;
+        return (n === ini && !empezada) ? PASOS[indicePaso('etapa', e)] : PASOS[indicePaso('lampara', n)];
+      }
+    }
+    return PASOS[PASOS.length - 1];
+  }
 
   function pintarProgreso() {
-    var a = leer(), sig = siguiente();
+    var a = leer(), sig = pasoSiguiente();
+    document.querySelectorAll('[data-pill]').forEach(function (el) { el.textContent = a.length + '/' + N; el.classList.toggle('con-luz', a.length > 0); });
     document.querySelectorAll('[data-progreso]').forEach(function (el) {
-      if (!a.length) el.textContent = 'Quince lámparas te esperan apagadas en la nave.';
-      else if (a.length === N) el.textContent = 'Has encendido las quince lámparas. La nave entera está iluminada.';
-      else el.textContent = 'Has encendido ' + a.length + (a.length === 1 ? ' lámpara' : ' lámparas') + ' de quince.';
+      el.textContent = !a.length ? 'Quince lámparas te esperan apagadas.' :
+        a.length === N ? 'Has encendido las quince lámparas.' :
+        'Has encendido ' + a.length + (a.length === 1 ? ' lámpara' : ' lámparas') + ' de quince.';
     });
     document.querySelectorAll('[data-continuar]').forEach(function (el) {
-      var hero = el.closest('.hero-acciones');
-      if (!a.length) { el.href = 'lampara.html?n=1'; el.textContent = hero ? 'Encender la primera lámpara' : 'Empezar'; }
-      else if (sig) { el.href = 'lampara.html?n=' + sig; el.textContent = hero ? 'Seguir por la lámpara ' + sig : 'Seguir · ' + sig; }
-      else { el.href = 'altar.html'; el.textContent = hero ? 'Ir al altar' : 'Altar'; }
+      el.href = sig.url;
+      el.textContent = !a.length ? 'Comenzar el camino' : a.length === N ? 'Llegar al altar' : 'Continuar · ' + (sig.tipo === 'etapa' ? 'Etapa ' + E[sig.e].id : 'Lámpara ' + sig.n);
     });
     document.querySelectorAll('[data-lampara]').forEach(function (el) {
       el.classList.toggle('encendida', a.indexOf(+el.getAttribute('data-lampara')) !== -1);
     });
+    var r = document.getElementById('ruta');
+    if (r) r.querySelectorAll('.aqui').forEach(function (x) { x.classList.remove('aqui'); }), marcarAqui();
   }
   window.addEventListener('cl:progreso', pintarProgreso);
-
   document.addEventListener('click', function (e) {
-    var r = e.target.closest('[data-reiniciar]');
-    if (r) { guardar([]); }
+    if (e.target.closest('[data-reiniciar]')) guardar([]);
   });
 
-  /* ---------- portada ---------- */
-  function portada() {
-    var cont = document.getElementById('etapas');
-    if (!cont) return;
-    cont.id = 'lamparas';
-    cont.innerHTML = D.etapas.map(function (e, k) {
-      var items = L.slice(e.desde - 1, e.hasta).map(function (l) {
-        return '<li><a class="item-lampara" data-lampara="' + l.n + '" href="lampara.html?n=' + l.n + '">' +
-          '<span class="item-img"><img src="' + foto(l.n) + '"' + fallback(l.n) + ' alt="" width="152" height="152" loading="lazy"></span>' +
-          '<span class="item-txt"><span class="item-tit">' + esc(l.titulo) + '</span>' +
-          '<span class="item-meta">Lámpara ' + l.n + ' · ' + esc(l.matiz) + ' · <i>' + esc(l.obra) + '</i>, ' + esc(l.autor) + '</span>' +
-          '<span class="item-llevar">' + esc(l.llevar) + '</span></span>' +
-          '<span class="item-estado" aria-hidden="true"></span></a></li>';
-      }).join('');
-      return '<section class="etapa etapa-' + (k + 1) + '" id="etapa-' + e.id + '" aria-labelledby="etapa-t-' + e.id + '">' +
-        '<div class="etapa-cab"><p class="etapa-num" aria-hidden="true">' + e.id + '</p>' +
-        '<div><h2 id="etapa-t-' + e.id + '">Etapa ' + e.id + ' · ' + esc(e.nombre) + '</h2>' +
-        '<p>' + esc(e.texto) + '</p><p class="etapa-rango">Lámparas ' + e.desde + ' a ' + e.hasta + '</p>' +
-        '<figure class="etapa-foto" data-foto3d="0.035"><img src="assets_img/foto-etapa-' + (k + 1) + '.webp" alt="" loading="lazy" onerror="this.parentNode.remove()"></figure></div></div>' +
-        '<ol class="lista-lamparas" start="' + e.desde + '">' + items + '</ol></section>' +
-        (k < 2 ? '<div class="ventana" aria-hidden="true"></div>' : '');
-    }).join('');
-    mapa();
+  /* ---------- barra fija inferior: anterior · progreso · siguiente ---------- */
+  function barra(i) {
+    var ant = PASOS[i - 1], sig = PASOS[i + 1], p = PASOS[i];
+    var segs = L.map(function (x) { return '<i data-lampara="' + x.n + '"' + (p.tipo === 'lampara' && x.n === p.n ? ' class="aqui"' : '') + '></i>'; }).join('');
+    var etq = p.tipo === 'altar' ? 'El altar' : p.tipo === 'etapa' ? 'Etapa ' + E[p.e].id + ' de 3' : 'Etapa ' + E[p.e].id + ' · Lámpara ' + p.n + ' de ' + N;
+    var nav = document.createElement('nav');
+    nav.className = 'barra-camino'; nav.setAttribute('aria-label', 'Avanzar por el camino');
+    nav.innerHTML =
+      '<a class="bc-ant" href="' + (ant ? ant.url : 'index.html') + '" aria-label="' + esc(ant ? 'Anterior: ' + ant.nombre : 'Inicio') + '">&#8249;</a>' +
+      '<a class="bc-centro" href="index.html#camino"><span class="bc-txt">' + esc(etq) + '</span><span class="bc-seg">' + segs + '</span></a>' +
+      (sig ? '<a class="bc-sig" href="' + sig.url + '" aria-label="' + esc('Siguiente: ' + sig.nombre) + '">Siguiente <b>&#8250;</b></a>'
+           : '<a class="bc-sig" href="index.html">Inicio</a>');
+    document.body.appendChild(nav);
+    var lectura = document.createElement('div'); lectura.className = 'lectura-barra'; lectura.setAttribute('aria-hidden', 'true'); lectura.innerHTML = '<i></i>';
+    document.body.appendChild(lectura);
+    function mover() {
+      var max = document.documentElement.scrollHeight - innerHeight, q = max > 0 ? scrollY / max : 0;
+      lectura.firstChild.style.transform = 'scaleX(' + Math.min(1, q).toFixed(4) + ')';
+    }
+    addEventListener('scroll', mover, { passive: true }); mover();
+    document.body.classList.add('con-barra');
+    return sig;
   }
 
-  function mapa() {
-    var svg = document.getElementById('mapa-svg'), lista = document.getElementById('mapa-lista');
-    if (!svg) return;
-    var ns = 'http://www.w3.org/2000/svg', C = 300, R = 210, out = '';
-    var colores = ['#c0764a', '#8f9b62', '#6f8fb0'];
-    // anillos
-    out += '<circle cx="300" cy="300" r="270" class="m-anillo"/><circle cx="300" cy="300" r="' + R + '" class="m-anillo m-anillo-2"/>';
-    L.forEach(function (l, i) {
-      var ang = -Math.PI / 2 + i * 2 * Math.PI / N;
-      var x = C + R * Math.cos(ang), y = C + R * Math.sin(ang);
-      out += '<line x1="300" y1="300" x2="' + x.toFixed(1) + '" y2="' + y.toFixed(1) + '" class="m-radio"/>';
+  /* ---------- portada: el camino completo, en orden ---------- */
+  function marcarAqui() {
+    var s = pasoSiguiente(), r = document.getElementById('ruta');
+    var sel = s.tipo === 'altar' ? '.ruta-altar' : s.tipo === 'etapa' ? '[data-etapa="' + s.e + '"]' : '[data-paso-lampara="' + s.n + '"]';
+    var el = r && r.querySelector(sel); if (el) el.classList.add('aqui');
+  }
+  function portada() {
+    var r = document.getElementById('ruta');
+    if (!r) return;
+    var h = '';
+    E.forEach(function (e, i) {
+      h += '<li class="ruta-etapa" data-etapa="' + i + '"><a href="etapa.html?e=' + (i + 1) + '">' +
+        '<span class="re-num">' + e.id + '</span><span class="re-txt"><span class="re-tit">Etapa ' + e.id + ' · ' + esc(e.nombre) + '</span>' +
+        '<span class="re-sub">Lámparas ' + e.desde + ' a ' + e.hasta + '</span></span></a></li>';
+      for (var n = e.desde; n <= e.hasta; n++) {
+        var l = L[n - 1];
+        h += '<li class="ruta-lampara" data-paso-lampara="' + n + '"><a data-lampara="' + n + '" href="lampara.html?n=' + n + '">' +
+          '<span class="rl-img"><img src="' + foto(n) + '"' + fallback(n) + ' alt="" width="96" height="96" loading="lazy"></span>' +
+          '<span class="rl-txt"><span class="rl-num">' + n + ' · ' + esc(l.matiz) + '</span><span class="rl-tit">' + esc(l.titulo) + '</span></span>' +
+          '<span class="rl-llama" aria-hidden="true"></span></a></li>';
+      }
     });
-    out += '<circle cx="300" cy="300" r="92" class="m-centro"/><text x="300" y="296" class="m-libertad">LIBERTAD</text><text x="300" y="326" class="m-sub">para amar y servir</text>';
-    L.forEach(function (l, i) {
-      var ang = -Math.PI / 2 + i * 2 * Math.PI / N;
-      var x = C + R * Math.cos(ang), y = C + R * Math.sin(ang);
-      var lx = C + 262 * Math.cos(ang), ly = C + 262 * Math.sin(ang);
-      var anchor = Math.abs(Math.cos(ang)) < 0.25 ? 'middle' : (Math.cos(ang) > 0 ? 'start' : 'end');
-      var col = colores[Math.floor(i / 5)];
-      out += '<a href="lampara.html?n=' + l.n + '" class="m-luz" data-lampara="' + l.n + '" aria-label="Lámpara ' + l.n + ': ' + esc(l.matiz) + '">' +
-        '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="30" class="m-halo"/>' +
-        '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="21" class="m-punto" style="--c:' + col + '"/>' +
-        '<text x="' + x.toFixed(1) + '" y="' + (y + 6).toFixed(1) + '" class="m-n">' + l.n + '</text>' +
-        '<text x="' + lx.toFixed(1) + '" y="' + (ly + 6).toFixed(1) + '" text-anchor="' + anchor + '" class="m-et">' + esc(l.matiz) + '</text></a>';
-    });
-    svg.insertAdjacentHTML('beforeend', out);
-    svg.setAttribute('viewBox', '-90 -10 780 620');
-    lista.innerHTML = D.etapas.map(function (e, k) {
-      return '<li><span class="ml-etapa" style="--c:' + colores[k] + '">' + esc(e.nombre) + '</span> ' +
-        L.slice(e.desde - 1, e.hasta).map(function (l) { return '<a data-lampara="' + l.n + '" href="lampara.html?n=' + l.n + '">' + esc(l.matiz) + '</a>'; }).join(', ') + '</li>';
-    }).join('');
+    h += '<li class="ruta-altar"><a href="altar.html"><span class="re-num">&#10013;</span><span class="re-txt"><span class="re-tit">El altar</span><span class="re-sub">Cristo y la verdadera libertad</span></span></a></li>';
+    r.innerHTML = h;
+  }
+
+  /* ---------- página de etapa ---------- */
+  function paginaEtapa() {
+    var main = document.getElementById('etapa');
+    if (!main) return;
+    var k = parseInt(new URLSearchParams(location.search).get('e'), 10);
+    if (!(k >= 1 && k <= E.length)) k = 1;
+    var e = E[k - 1], i = indicePaso('etapa', k - 1);
+    document.title = 'Etapa ' + e.id + ' · ' + e.nombre + ' · La Catedral de la Libertad';
+    var lista = '';
+    for (var n = e.desde; n <= e.hasta; n++) lista += '<li data-lampara="' + n + '"><span>' + n + '</span>' + esc(L[n - 1].titulo) + '</li>';
+    main.innerHTML =
+      '<section class="etapa-hero">' +
+        '<figure class="etapa-foto" data-foto3d="0.03"><img src="assets_img/foto-etapa-' + k + '.webp" alt="" onerror="this.parentNode.remove()"></figure>' +
+        '<div class="etapa-txt"><p class="etapa-num" aria-hidden="true">' + e.id + '</p>' +
+        '<h1>' + esc(e.nombre) + '</h1>' +
+        '<p class="entradilla">' + esc(e.texto) + '</p></div>' +
+      '</section>' +
+      '<section class="etapa-lista" aria-labelledby="el-t"><h2 id="el-t">En esta etapa</h2><ol>' + lista + '</ol>' +
+      '<a class="btn btn-oro btn-grande" href="lampara.html?n=' + e.desde + '">Empezar por la lámpara ' + e.desde + '</a></section>';
+    barra(i);
   }
 
   /* ---------- página de lámpara ---------- */
@@ -113,50 +150,46 @@
     if (!main) return;
     var n = parseInt(new URLSearchParams(location.search).get('n'), 10);
     if (!(n >= 1 && n <= N)) n = 1;
-    var l = L[n - 1], e = etapaDe(n);
+    var l = L[n - 1], e = E[etapaDe(n)], i = indicePaso('lampara', n);
     document.title = l.titulo + ' · La Catedral de la Libertad';
     var url = location.href.split('#')[0];
     var wa = 'https://wa.me/?text=' + encodeURIComponent('La Catedral de la Libertad · Lámpara ' + n + ': ' + l.titulo + '\n«' + l.llevar + '»\n' + url);
     var palabras = l.lectura.join(' ').split(/\s+/).length + l.detente.split(/\s+/).length + l.oracion.split(/\s+/).length;
     var min = Math.max(3, Math.round(palabras / 180));
-    var ant = n > 1 ? L[n - 2] : null, sig = n < N ? L[n] : null;
 
     main.innerHTML =
       '<article class="lamp" data-lampara="' + n + '">' +
       '<figure class="lamp-foto" data-foto3d="0.03"><img src="' + foto(n) + '" alt="Fotografía de la lámpara ' + n + ': ' + esc(l.matiz) + '" onerror="this.closest(\'.lamp\').classList.add(\'sin-foto\');this.parentNode.remove()"><span class="lamp-velo" aria-hidden="true"></span></figure>' +
       '<header class="lamp-cab">' +
-        '<div class="lamp-img"><img src="' + img(n) + '" width="304" height="304" alt="Ilustración de la lámpara ' + n + ': ' + esc(l.matiz) + '"><span class="lamp-luz" aria-hidden="true"></span></div>' +
-        '<div class="lamp-cab-txt">' +
-          '<h1>' + esc(l.titulo) + '</h1>' +
-          '<p class="lamp-fuente">Inspirada en <i>' + esc(l.obra) + '</i>, de ' + esc(l.autor) + '</p>' +
-          '<p class="lamp-datos">Lámpara ' + n + ' de ' + N + ' · ' + esc(l.matiz) + ' · <a href="index.html#etapa-' + e.id + '">Etapa ' + e.id + ', ' + esc(e.nombre) + '</a> · ' + min + ' min de lectura</p>' +
-          '<div class="lamp-herr"><button type="button" class="btn btn-linea btn-peq" data-letra>Letra más grande</button>' +
-          '<a class="btn btn-linea btn-peq" href="' + wa + '" target="_blank" rel="noopener">Enviar por WhatsApp</a></div>' +
-        '</div>' +
+        '<div class="lamp-img"><img src="' + img(n) + '" width="304" height="304" alt=""><span class="lamp-luz" aria-hidden="true"></span></div>' +
+        '<p class="lamp-datos">Etapa ' + e.id + ' · Lámpara ' + n + ' de ' + N + '</p>' +
+        '<h1>' + esc(l.titulo) + '</h1>' +
+        '<p class="lamp-fuente">Inspirada en <i>' + esc(l.obra) + '</i>, de ' + esc(l.autor) + ' · ' + min + ' min</p>' +
+        '<div class="lamp-herr"><button type="button" class="btn btn-linea btn-peq" data-letra>Letra más grande</button>' +
+        '<a class="btn btn-linea btn-peq" href="' + wa + '" target="_blank" rel="noopener">Enviar por WhatsApp</a></div>' +
       '</header>' +
       '<div class="lectura">' + l.lectura.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') + '</div>' +
-      '<section class="bloque detente" aria-labelledby="b1"><h2 id="b1">Detente un momento</h2><p>' + esc(l.detente) + '</p></section>' +
-      '<section class="bloque palabra" aria-labelledby="b2"><h2 id="b2">Palabra de Dios</h2><blockquote><p>' + esc(l.palabra) + '</p><cite>' + esc(l.cita) + '</cite></blockquote></section>' +
-      '<section class="bloque paso" aria-labelledby="b3"><h2 id="b3">Un paso para hoy</h2><p>' + esc(l.paso) + '</p></section>' +
-      '<section class="bloque oracion" aria-labelledby="b4"><h2 id="b4">Oración</h2><p>' + esc(l.oracion) + '</p></section>' +
-      '<section class="llevar" aria-labelledby="b5"><h2 id="b5">Para llevar contigo</h2><p class="llevar-frase">' + esc(l.llevar) + '</p>' +
-        '<button type="button" class="btn btn-oro btn-encender" data-encender>Encender esta lámpara</button>' +
+      '<section class="bloque detente"><h2>Detente un momento</h2><p>' + esc(l.detente) + '</p></section>' +
+      '<section class="bloque palabra"><h2>Palabra de Dios</h2><blockquote><p>' + esc(l.palabra) + '</p><cite>' + esc(l.cita) + '</cite></blockquote></section>' +
+      '<section class="bloque paso"><h2>Un paso para hoy</h2><p>' + esc(l.paso) + '</p></section>' +
+      '<section class="bloque oracion"><h2>Oración</h2><p>' + esc(l.oracion) + '</p></section>' +
+      '<section class="llevar"><h2>Para llevar contigo</h2><p class="llevar-frase">' + esc(l.llevar) + '</p>' +
+        '<button type="button" class="btn btn-oro btn-grande btn-encender" data-encender>Encender esta lámpara</button>' +
+        '<a class="btn btn-linea btn-grande llevar-sig" hidden></a>' +
         '<p class="llevar-nota" data-progreso aria-live="polite"></p></section>' +
-      '</article>' +
-      '<nav class="lamp-nav" aria-label="Otras lámparas">' +
-        (ant ? '<a class="ln-ant" href="lampara.html?n=' + (n - 1) + '"><span>Lámpara anterior</span>' + esc(ant.titulo) + '</a>' : '<a class="ln-ant" href="index.html#camino"><span>Antes de empezar</span>Un camino por la catedral</a>') +
-        (sig ? '<a class="ln-sig" href="lampara.html?n=' + (n + 1) + '"><span>Lámpara siguiente</span>' + esc(sig.titulo) + '</a>' : '<a class="ln-sig" href="altar.html"><span>Final del camino</span>Llegar al altar</a>') +
-      '</nav>' +
-      '<nav class="rosario" aria-label="Las quince lámparas"><ol>' + L.map(function (x) {
-        return '<li><a data-lampara="' + x.n + '" href="lampara.html?n=' + x.n + '"' + (x.n === n ? ' aria-current="page"' : '') + ' title="' + esc(x.titulo) + '">' + x.n + '</a></li>';
-      }).join('') + '<li><a class="ros-altar" href="altar.html" title="El altar">✝</a></li></ol></nav>';
+      '</article>';
 
-    var btn = main.querySelector('[data-encender]');
+    var sig = barra(i);
+    var btn = main.querySelector('[data-encender]'), bSig = main.querySelector('.llevar-sig');
+    bSig.href = sig.url;
+    bSig.textContent = sig.tipo === 'altar' ? 'Llegar al altar ›' : sig.tipo === 'etapa' ? 'Seguir: Etapa ' + E[sig.e].id + ' ›' : 'Seguir: lámpara ' + sig.n + ' ›';
     function estado() {
       var on = encendida(n);
-      btn.textContent = on ? 'Lámpara encendida · apagar' : 'Encender esta lámpara';
+      btn.textContent = on ? 'Lámpara encendida' : 'Encender esta lámpara';
       btn.setAttribute('aria-pressed', on ? 'true' : 'false');
       main.querySelector('.lamp').classList.toggle('encendida', on);
+      bSig.hidden = !on;
+      bSig.classList.toggle('btn-oro', on); bSig.classList.toggle('btn-linea', !on);
     }
     btn.addEventListener('click', function () { encendida(n) ? apagar(n) : encender(n); estado(); });
     estado();
@@ -169,11 +202,6 @@
       etLetra();
     });
     etLetra();
-    document.addEventListener('keydown', function (ev) {
-      if (ev.target.closest('input,textarea')) return;
-      if (ev.key === 'ArrowRight') location.href = sig ? 'lampara.html?n=' + (n + 1) : 'altar.html';
-      if (ev.key === 'ArrowLeft' && ant) location.href = 'lampara.html?n=' + (n - 1);
-    });
   }
 
   /* ---------- altar ---------- */
@@ -181,29 +209,24 @@
     var ol = document.getElementById('letania-lista');
     if (!ol) return;
     ol.innerHTML = L.map(function (l) {
-      return '<li data-lampara="' + l.n + '"><a href="lampara.html?n=' + l.n + '"><span class="let-matiz">' + esc(l.matiz) + '</span><span class="let-frase">' + esc(l.llevar) + '</span></a></li>';
+      return '<li data-lampara="' + l.n + '"><span class="let-matiz">' + l.n + ' · ' + esc(l.matiz) + '</span><span class="let-frase">' + esc(l.llevar) + '</span></li>';
     }).join('');
+    barra(PASOS.length - 1);
   }
 
   /* ---------- aparición al entrar en pantalla ---------- */
   function apariciones() {
-    var sel = '.intro-txt,.pregunta,.etapa-cab,.item-lampara,.mapa-txt,.mapa-fig,.infografia figure,.info-txt,.altar-cierre > *,.lectura p,.bloque,.llevar > *,.letania li,.altar-hero > *';
-    var els = document.querySelectorAll(sel);
     if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var els = document.querySelectorAll('.camino-intro,.ruta li,.etapa-lista li,.lectura p,.bloque,.llevar > *,.letania li');
     var io = new IntersectionObserver(function (ents) {
       ents.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('visto'); io.unobserve(en.target); } });
-    }, { rootMargin: '0px 0px -8% 0px' });
-    els.forEach(function (el, i) {
-      var par = el.parentElement, idx = Array.prototype.indexOf.call(par.children, el);
-      el.style.setProperty('--d', Math.min(idx, 6) * 70 + 'ms');
-      el.classList.add('aparece'); io.observe(el);
-    });
+    }, { rootMargin: '0px 0px -6% 0px' });
+    els.forEach(function (el) { el.classList.add('aparece'); io.observe(el); });
   }
 
-  /* cabecera compacta al bajar */
   var cab = document.querySelector('.cabecera');
-  function cabScroll() { if (cab) cab.classList.toggle('compacta', window.scrollY > 40); }
+  function cabScroll() { if (cab) cab.classList.toggle('compacta', window.scrollY > 30); }
   window.addEventListener('scroll', cabScroll, { passive: true });
 
-  portada(); paginaLampara(); altar(); pintarProgreso(); apariciones(); cabScroll();
+  portada(); paginaEtapa(); paginaLampara(); altar(); pintarProgreso(); apariciones(); cabScroll();
 })();

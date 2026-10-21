@@ -257,20 +257,7 @@
   function tapado(el) {
     return el.closest && el.closest('a,button,input,summary,.hero-txt,.intro-txt,.pregunta,.cabecera,.etapa,.mapa,.infografia,.vuelo,.pie');
   }
-  document.addEventListener('mousemove', function (e) {
-    if (tapado(e.target)) { tip.hidden = true; document.body.style.cursor = ''; return; }
-    var n = lampAt(e.clientX, e.clientY), L = window.CL && CL.lamparas[n - 1];
-    if (n && L) {
-      tip.textContent = n + ' · ' + L.titulo;
-      tip.style.transform = 'translate(' + (e.clientX + 14) + 'px,' + (e.clientY + 10) + 'px)';
-      tip.hidden = false; document.body.style.cursor = 'pointer';
-    } else { tip.hidden = true; document.body.style.cursor = ''; }
-  }, { passive: true });
-  document.addEventListener('click', function (e) {
-    if (tapado(e.target)) return;
-    var n = lampAt(e.clientX, e.clientY);
-    if (n) location.href = 'lampara.html?n=' + n;
-  });
+  /* versión móvil: las lámparas de la portada son solo decorativas (un único camino) */
 
   function arrancar(m) {
     modo = m;

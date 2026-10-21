@@ -206,6 +206,8 @@
     palabras(document.querySelector('.hero h1'));
     palabras(document.querySelector('.lamp-cab h1'));
     palabras(document.querySelector('.altar-hero h1'));
+    palabras(document.querySelector('.etapa-hero h1'));
+    var eh = document.querySelector('.etapa-hero'); if (eh) motas(eh, { n: 40 });
     var lf = document.querySelector('.lamp-foto'); if (lf) motas(lf, { n: 50 });
     var ah = document.querySelector('.altar-hero'); if (ah) motas(ah, { n: 60, chispas: true });
     var vc = document.querySelector('.vuelo-escena'); if (vc) motas(vc, { n: 40 });

@@ -210,7 +210,7 @@
       drawSuelo(); drawAltar();
       for (var i = BAYS; i >= 0; i--) { drawBay(i); if (i >= 1 && i <= N) drawLamp(i, t); }
     } else {
-      for (var j = N; j >= 1; j--) drawLamp(j, t);
+      /* en modo foto no se dibujan lámparas: la foto ya tiene las suyas; solo polvo de luz */
     }
     drawMotas(t);
     hits.reverse();

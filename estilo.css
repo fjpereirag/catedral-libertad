@@ -30,7 +30,7 @@ main,.pie{position:relative;z-index:2;max-width:var(--col);margin:0 auto;backgro
 /* ---------- cabecera ---------- */
 .cabecera{position:fixed;top:0;left:50%;z-index:30;width:100%;max-width:var(--col);transform:translateX(-50%);
   display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(12px + env(safe-area-inset-top)) var(--m) 12px;transition:background .3s}
-.cabecera.compacta,.pagina-lampara .cabecera,.pagina-etapa .cabecera,.pagina-altar .cabecera{background:rgba(20,15,11,.94)}
+.cabecera.compacta,.pagina-lampara .cabecera,.pagina-etapa .cabecera,.pagina-altar .cabecera{background:var(--noche)}
 .marca{display:flex;align-items:center;gap:10px;font:600 1.12rem/1 var(--serif);color:var(--marfil);text-decoration:none}
 .llama{width:11px;height:16px;border-radius:50% 50% 45% 45%/62% 62% 38% 38%;background:var(--oro);box-shadow:0 0 12px 2px rgba(240,200,120,.55);animation:llama 2.6s ease-in-out infinite}
 @keyframes llama{50%{transform:scale(.9,1.08);box-shadow:0 0 18px 4px rgba(240,200,120,.7)}}
@@ -62,10 +62,10 @@ body.con-foto #nave{background:none}
 .entradilla{font:500 clamp(1.22rem,4.8vw,1.45rem)/1.35 var(--serif);color:var(--marfil);margin:20px 0 28px}
 .progreso{margin:16px 0 0;color:var(--marfil-2);font-size:.92rem;text-align:center}
 
-.camino{background:var(--noche);padding:64px var(--m) 40px}
-.camino h2{font-size:2.6rem;margin-bottom:14px}
+.camino{background:var(--noche);padding:36px var(--m) 40px}
+.camino h2{font-size:2.4rem;margin-bottom:8px}
 .camino-intro{font-size:var(--lectura);color:var(--marfil-2)}
-.ruta{list-style:none;margin:28px 0 0;padding:0;position:relative}
+.ruta{list-style:none;margin:20px 0 0;padding:0;position:relative}
 .ruta::before{content:"";position:absolute;left:27px;top:20px;bottom:30px;width:2px;background:rgba(217,178,106,.25)}
 .ruta li{position:relative}
 .ruta a{display:flex;align-items:center;gap:16px;text-decoration:none;color:var(--marfil)}
@@ -192,6 +192,8 @@ body.con-barra .pie{display:none}
 .bc-seg i:nth-child(5),.bc-seg i:nth-child(10){margin-right:4px}
 .bc-seg i.encendida{background:var(--oro-3)}
 .bc-seg i.aqui{background:var(--oro-2)}
+.barra-camino::before{content:"";position:absolute;left:-10px;right:-10px;bottom:calc(-10px - env(safe-area-inset-bottom));height:calc(100% + 56px + env(safe-area-inset-bottom));z-index:-1;pointer-events:none;
+  background:linear-gradient(0deg,var(--noche) 0%,var(--noche) 55%,rgba(20,15,11,0) 100%)}
 .lectura-barra{position:fixed;left:50%;top:0;width:100%;max-width:var(--col);transform:translateX(-50%);height:3px;z-index:40;pointer-events:none}
 .lectura-barra i{display:block;height:100%;background:var(--oro);transform-origin:left;transform:scaleX(0)}
 

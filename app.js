@@ -76,7 +76,7 @@
   function barra(i) {
     var ant = PASOS[i - 1], sig = PASOS[i + 1], p = PASOS[i];
     var segs = L.map(function (x) { return '<i data-lampara="' + x.n + '"' + (p.tipo === 'lampara' && x.n === p.n ? ' class="aqui"' : '') + '></i>'; }).join('');
-    var etq = p.tipo === 'altar' ? 'El altar' : p.tipo === 'etapa' ? 'Etapa ' + E[p.e].id + ' de 3' : 'Etapa ' + E[p.e].id + ' · Lámpara ' + p.n + ' de ' + N;
+    var etq = p.tipo === 'altar' ? 'El altar' : p.tipo === 'etapa' ? 'Etapa ' + E[p.e].id : 'Lámpara ' + p.n + ' / ' + N;
     var nav = document.createElement('nav');
     nav.className = 'barra-camino'; nav.setAttribute('aria-label', 'Avanzar por el camino');
     nav.innerHTML =

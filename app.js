@@ -96,6 +96,36 @@
     return sig;
   }
 
+
+  /* ---------- reproductor de audio (solo aparece si el MP3 existe) ---------- */
+  function reproductor(donde, src, titulo, antes) {
+    if (!donde) return;
+    var caja = document.createElement('div');
+    caja.className = 'audio'; caja.hidden = true;
+    caja.innerHTML = '<button type="button" class="audio-btn" aria-label="Escuchar"><span class="audio-ico" aria-hidden="true"></span><span class="audio-txt">Escuchar</span></button>' +
+      '<span class="audio-barra" aria-hidden="true"><i></i></span><span class="audio-t">0:00</span>';
+    if (antes) donde.insertBefore(caja, antes); else donde.appendChild(caja);
+    var a = new Audio(); a.preload = 'none'; a.src = src;
+    var btn = caja.querySelector('.audio-btn'), txt = caja.querySelector('.audio-txt'), barra = caja.querySelector('.audio-barra i'), t = caja.querySelector('.audio-t');
+    function mmss(x) { x = Math.max(0, Math.round(x || 0)); return Math.floor(x / 60) + ':' + ('0' + x % 60).slice(-2); }
+    fetch(src, { method: 'HEAD' }).then(function (r) { if (r.ok) caja.hidden = false; }).catch(function () {});
+    btn.addEventListener('click', function () { a.paused ? a.play() : a.pause(); });
+    a.addEventListener('play', function () {
+      caja.classList.add('sonando'); txt.textContent = 'Pausa'; btn.setAttribute('aria-label', 'Pausar');
+      if ('mediaSession' in navigator) navigator.mediaSession.metadata = new MediaMetadata({ title: titulo, artist: 'La Catedral de la Libertad', artwork: [{ src: 'assets_img/foto-nave.webp', sizes: '512x512', type: 'image/webp' }] });
+    });
+    a.addEventListener('pause', function () { caja.classList.remove('sonando'); txt.textContent = a.currentTime > 1 ? 'Seguir' : 'Escuchar'; btn.setAttribute('aria-label', 'Escuchar'); });
+    a.addEventListener('timeupdate', function () {
+      if (a.duration) barra.style.transform = 'scaleX(' + (a.currentTime / a.duration).toFixed(4) + ')';
+      t.textContent = mmss(a.currentTime) + (a.duration ? ' / ' + mmss(a.duration) : '');
+    });
+    a.addEventListener('loadedmetadata', function () { t.textContent = '0:00 / ' + mmss(a.duration); });
+    a.addEventListener('ended', function () { txt.textContent = 'Escuchar de nuevo'; });
+    caja.querySelector('.audio-barra').addEventListener('click', function (e) {
+      if (!a.duration) return; var r = this.getBoundingClientRect(); a.currentTime = (e.clientX - r.left) / r.width * a.duration;
+    });
+  }
+
   /* ---------- portada: el camino completo, en orden ---------- */
   function marcarAqui() {
     var s = pasoSiguiente(), r = document.getElementById('ruta');
@@ -141,6 +171,7 @@
       '</section>' +
       '<section class="etapa-lista" aria-labelledby="el-t"><h2 id="el-t">En esta etapa</h2><ol>' + lista + '</ol>' +
       '<a class="btn btn-oro btn-grande" href="lampara.html?n=' + e.desde + '">Empezar por la lámpara ' + e.desde + '</a></section>';
+    reproductor(main.querySelector('.etapa-txt'), 'assets_audio/etapa-' + k + '.mp3', 'Etapa ' + e.id + ' · ' + e.nombre);
     barra(i);
   }
 
@@ -179,6 +210,7 @@
         '<p class="llevar-nota" data-progreso aria-live="polite"></p></section>' +
       '</article>';
 
+    reproductor(main.querySelector('.lamp-cab'), 'assets_audio/lampara-' + nn(n) + '.mp3', 'Lámpara ' + n + ' · ' + l.titulo, main.querySelector('.lamp-herr'));
     var sig = barra(i);
     var btn = main.querySelector('[data-encender]'), bSig = main.querySelector('.llevar-sig');
     bSig.href = sig.url;
@@ -211,6 +243,8 @@
     ol.innerHTML = L.map(function (l) {
       return '<li data-lampara="' + l.n + '"><span class="let-matiz">' + l.n + ' · ' + esc(l.matiz) + '</span><span class="let-frase">' + esc(l.llevar) + '</span></li>';
     }).join('');
+    var ah = document.querySelector('.altar-hero');
+    reproductor(ah, 'assets_audio/altar.mp3', 'El altar', ah && ah.querySelector('.cita-grande'));
     barra(PASOS.length - 1);
   }
 

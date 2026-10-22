@@ -68,6 +68,10 @@
     if (r) r.querySelectorAll('.aqui').forEach(function (x) { x.classList.remove('aqui'); }), marcarAqui();
   }
   window.addEventListener('cl:progreso', pintarProgreso);
+  /* al volver atrás el móvil restaura la página de memoria: repintar siempre */
+  window.addEventListener('pageshow', pintarProgreso);
+  window.addEventListener('storage', function (e) { if (e.key === KEY) pintarProgreso(); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) pintarProgreso(); });
   document.addEventListener('click', function (e) {
     if (e.target.closest('[data-reiniciar]')) guardar([]);
   });

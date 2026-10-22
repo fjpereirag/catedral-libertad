@@ -85,6 +85,9 @@ body.con-foto #nave{background:none}
 .rl-tit{font:600 1.2rem/1.15 var(--serif)}
 .rl-llama{flex:0 0 12px;height:17px;border-radius:50% 50% 45% 45%/62% 62% 38% 38%;background:var(--tierra-2)}
 .ruta a.encendida .rl-llama{background:var(--oro-2);box-shadow:0 0 14px 3px rgba(240,200,120,.55)}
+.ruta a.encendida .rl-img{box-shadow:0 0 0 3px var(--oro-2),0 0 18px 4px rgba(240,200,120,.45)}
+.ruta a.encendida .rl-num{color:var(--oro-2)}
+.ruta a.encendida .rl-num::after{content:" · encendida"}
 .ruta .aqui > a{background:rgba(217,178,106,.12);border-radius:18px;margin:0 -10px;padding:10px}
 .ruta .aqui > a::after{content:"Sigue aquí";flex:0 0 auto;padding:5px 10px;border-radius:999px;background:var(--oro);color:var(--noche);font:600 .74rem var(--sans)}
 .ruta .aqui .rl-llama{display:none}
@@ -177,6 +180,18 @@ body.con-barra .pie{display:none}
 .let-matiz{display:block;font-size:.82rem;color:var(--marfil-2);margin-bottom:2px}
 .let-frase{font:500 1.25rem/1.3 var(--serif)}
 #letania-lista li.encendida .let-frase{color:var(--oro-2)}
+
+/* ---------- reproductor de audio ---------- */
+.audio{display:flex;align-items:center;gap:12px;margin:18px 0 0;padding:6px 14px 6px 6px;border-radius:999px;background:rgba(244,234,216,.1);max-width:100%}
+.audio[hidden]{display:none}
+.audio-btn{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 18px 0 8px;border:0;border-radius:999px;background:var(--oro);color:var(--noche);font:600 .98rem var(--sans);flex:0 0 auto}
+.audio-ico{width:32px;height:32px;border-radius:50%;background:var(--noche);position:relative}
+.audio-ico::after{content:"";position:absolute;left:12px;top:9px;border-left:11px solid var(--oro);border-top:7px solid transparent;border-bottom:7px solid transparent}
+.sonando .audio-ico::after{left:10px;top:10px;width:4px;height:12px;border:0;background:var(--oro);box-shadow:7px 0 0 var(--oro)}
+.audio-barra{flex:1;height:6px;border-radius:3px;background:rgba(244,234,216,.18);overflow:hidden;cursor:pointer;min-width:40px}
+.audio-barra i{display:block;height:100%;background:var(--oro-2);transform-origin:left;transform:scaleX(0)}
+.audio-t{font:500 .82rem var(--sans);color:var(--marfil-2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.altar-hero .audio{width:100%;margin:18px 0 6px}
 
 /* ---------- barra fija: anterior · progreso · siguiente ---------- */
 .barra-camino{position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom));z-index:35;transform:translateX(-50%);
